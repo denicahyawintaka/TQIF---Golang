@@ -37,7 +37,14 @@ func NewDiaryController(diaryServ service.DiaryService, jwtServ service.JWTServi
 }
 
 func (c *diaryController) All(context *gin.Context) {
-	var diaries []entity.Diary = c.diaryService.All()
+	authHeader := context.GetHeader("Authorization")
+	token, errToken := c.jwtService.ValidateToken(authHeader)
+	if errToken != nil {
+		panic(errToken.Error())
+	}
+	claims := token.Claims.(jwt.MapClaims)
+	userID := fmt.Sprintf("%v", claims["user_id"])
+	var diaries []entity.Diary = c.diaryService.All(userID)
 	res := helper.BuildResponse(true, "OK", diaries)
 	context.JSON(http.StatusOK, res)
 }

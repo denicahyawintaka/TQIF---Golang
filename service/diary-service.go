@@ -11,12 +11,12 @@ import (
 	"github.com/mashingan/smapping"
 )
 
-//DiaryService is a ....
+// DiaryService is a ....
 type DiaryService interface {
 	Insert(b dto.DiaryCreateDTO) entity.Diary
 	Update(b dto.DiaryUpdateDTO) entity.Diary
 	Delete(b entity.Diary)
-	All() []entity.Diary
+	All(userID string) []entity.Diary
 	FindByID(diaryID uint64) entity.Diary
 	IsAllowedToEdit(userID string, diaryID uint64) bool
 }
@@ -25,7 +25,7 @@ type diaryService struct {
 	diaryRepository repository.DiaryRepository
 }
 
-//NewDiaryService .....
+// NewDiaryService .....
 func NewDiaryService(diaryRepo repository.DiaryRepository) DiaryService {
 	return &diaryService{
 		diaryRepository: diaryRepo,
@@ -56,8 +56,8 @@ func (service *diaryService) Delete(b entity.Diary) {
 	service.diaryRepository.DeleteDiary(b)
 }
 
-func (service *diaryService) All() []entity.Diary {
-	return service.diaryRepository.AllDiary()
+func (service *diaryService) All(userID string) []entity.Diary {
+	return service.diaryRepository.AllDiary(userID)
 }
 
 func (service *diaryService) FindByID(diaryID uint64) entity.Diary {

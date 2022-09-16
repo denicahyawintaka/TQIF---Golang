@@ -1,17 +1,18 @@
 package repository
 
 import (
+	"log"
 	"tqif-golang/entity"
 
 	"gorm.io/gorm"
 )
 
-//DiaryRepository is a ....
+// DiaryRepository is a ....
 type DiaryRepository interface {
 	InsertDiary(b entity.Diary) entity.Diary
 	UpdateDiary(b entity.Diary) entity.Diary
 	DeleteDiary(b entity.Diary)
-	AllDiary() []entity.Diary
+	AllDiary(userID string) []entity.Diary
 	FindDiaryByID(diaryID uint64) entity.Diary
 }
 
@@ -19,7 +20,7 @@ type diaryConnection struct {
 	connection *gorm.DB
 }
 
-//NewDiaryRepository creates an instance DiaryRepository
+// NewDiaryRepository creates an instance DiaryRepository
 func NewDiaryRepository(dbConn *gorm.DB) DiaryRepository {
 	return &diaryConnection{
 		connection: dbConn,
@@ -48,8 +49,10 @@ func (db *diaryConnection) FindDiaryByID(diaryID uint64) entity.Diary {
 	return diary
 }
 
-func (db *diaryConnection) AllDiary() []entity.Diary {
+func (db *diaryConnection) AllDiary(userID string) []entity.Diary {
 	var diaries []entity.Diary
-	db.connection.Preload("User").Find(&diaries)
+	log.Println("datanya ", userID)
+
+	db.connection.Preload("User").Where("user_id = ?", userID).Find(&diaries)
 	return diaries
 }
